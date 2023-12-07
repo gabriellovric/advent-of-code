@@ -18,11 +18,12 @@ public class Solution {
             var scanner = new Scanner(file);
             var pattern = Pattern.compile("(\\d+|[^\\.0-9])");
 
-            var partNumbers = new ArrayList<Integer>();
 
             var lines = new ArrayList<String>();
             var numbers = new ArrayList<int[]>();
             var symbols = new ArrayList<int[]>();
+            var ratioSum = 0;
+            var sum = 0;
 
             for (int i = 0; scanner.hasNextLine(); i++) {
                 var line = scanner.nextLine();
@@ -69,8 +70,11 @@ public class Solution {
                 System.out.println("[" + i + "," + j + "]" + "[" + lineStart + "," + lineEnd + "][" + positionStart
                         + "," + positionEnd + "]");
 
+                var currentPartials = new ArrayList<Integer>();
+
                 for (int ii = lineStart; ii <= lineEnd; ii++) {
                     for (int jj = positionStart; jj <= positionEnd; jj++) {
+
                         if (Character.isDigit(lines.get(ii).charAt(jj))) {
                             System.out.println("Partial number found at line: " + ii + " position: " + jj);
 
@@ -82,22 +86,28 @@ public class Solution {
                                 var isPartial = num[4];
 
                                 if (isPartial == 0 && ln == ii && jj >= pos && jj < end) {
-                                    partNumbers.add(number);
                                     num[4] = 1;
+                                    sum += number;
+                                    currentPartials.add(number);
                                 }
                             }
 
                         }
                     }
                 }
+
+                if (line.charAt(j) == '*' && currentPartials.size() == 2) {
+                    System.out.println("---------------------------gear found");
+
+                    var ratio = currentPartials.get(0) * currentPartials.get(1);
+
+                    ratioSum += ratio;
+                }
+
             }
 
-            var sum = 0;
-            for (var partial : partNumbers) {
-                System.out.println(partial);
-                sum += partial;
-            }
-            System.out.println(sum);
+            System.out.println("Sum: " + sum);
+            System.out.println("Ratio sum: " + ratioSum);
 
         } catch (FileNotFoundException e) {
             System.out.println("Usage: java Solution.java <input file>");

@@ -24,6 +24,7 @@ public class Solution {
 
             String line = reader.readLine();
             int sum = 0;
+            int sumOfPowers = 0;
 
             while (line != null) {
                 var a = line.indexOf(":");
@@ -31,6 +32,10 @@ public class Solution {
                 var selections = line.substring(a + 2).split(";");
 
                 boolean possible = true;
+
+                int maxRed = 0;
+                int maxGreen = 0;
+                int maxBlue = 0;
 
                 System.out.println("(" + id + ")");
 
@@ -46,29 +51,51 @@ public class Solution {
 
                         System.out.print("(" + quantity + "|" + color + ") ");
 
+                        if (color.equals("red")) {
+                            if (maxRed < quantity) {
+                                maxRed = quantity;
+                            }
+                        }
+                        if (color.equals("green")) {
+                            if (maxGreen < quantity) {
+                                maxGreen = quantity;
+                            }
+                        }
+                        if (color.equals("blue")) {
+                            if (maxBlue < quantity) {
+                                maxBlue = quantity;
+                            }
+                        }
+
                         if ((color.equals("red") && quantity > 12)
                                 || (color.equals("green") && quantity > 13)
                                 || (color.equals("blue") && quantity > 14)) {
                             possible = false;
-                            break;
+                            // break;
                         }
                     }
 
                     System.out.println("");
-                    if (!possible) {
-                        break;
-                    }
+                    // if (!possible) {
+                    //     break;
+                    // }
                 }
 
                 if (possible) {
                     sum += id;
                 }
 
-                System.out.println();
+                int power = maxRed * maxGreen * maxBlue;
+                System.out.println("Power:" + power);
+                System.out.println("");
+
+                sumOfPowers += power;
+
                 line = reader.readLine();
             }
 
             System.out.println("Sum: " + sum);
+            System.out.println("Sum of powers: " + sumOfPowers);
 
             reader.close();
         } catch (

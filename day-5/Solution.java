@@ -19,7 +19,7 @@ public class Solution {
                 throw new IOException("Invalid input file");
             }
 
-            var seeds = parts[0].substring(7).split("\s+");
+            var seeds = mapToLongArray(parts[0].substring(7).split("\s+"));
             var seedToSoil = parseMap(parts[1]);
             var soilToFertilizer = parseMap(parts[2]);
             var fertilizerToWater = parseMap(parts[3]);
@@ -28,14 +28,17 @@ public class Solution {
             var temperatureToHumidity = parseMap(parts[6]);
             var humidityToLocation = parseMap(parts[7]);
 
-            System.out.println(seeds.length);
-            System.out.println(seedToSoil.length);
-            System.out.println(soilToFertilizer.length);
-            System.out.println(fertilizerToWater.length);
-            System.out.println(waterToLight.length);
-            System.out.println(lightToTemperature.length);
-            System.out.println(temperatureToHumidity.length);
-            System.out.println(humidityToLocation.length);
+            long[] soils = mapValues(seeds, seedToSoil);
+            long[] fertilizers = mapValues(soils, soilToFertilizer);
+            long[] waters = mapValues(fertilizers, fertilizerToWater);
+            long[] lights = mapValues(waters, waterToLight);
+            long[] temperatures = mapValues(lights, lightToTemperature);
+            long[] humidities = mapValues(temperatures, temperatureToHumidity);
+            long[] locations = mapValues(humidities, humidityToLocation);
+
+            long min = Arrays.stream(locations).min().getAsLong();
+
+            System.out.println(min);
 
         } catch (FileNotFoundException e) {
             System.out.println("Usage: java Solution.java <input file>");
@@ -47,7 +50,30 @@ public class Solution {
 
     }
 
-    private static long[] mapToIntArray(String[] source) {
+    private static long[] mapValues(long[] values, long[][] map) {
+        long[] mapped = new long[values.length];
+
+        for (int i = 0; i < values.length; i++) {
+
+            mapped[i] = -1;
+
+            for (long[] mapping : map) {
+                if (values[i] >= mapping[1] && values[i] < mapping[1] + mapping[2]) {
+                    mapped[i] = mapping[0] + values[i] - mapping[1];
+                    break;
+                }
+            }
+
+            if (mapped[i] == -1) {
+                mapped[i] = values[i];
+            }
+
+        }
+
+        return mapped;
+    }
+
+    private static long[] mapToLongArray(String[] source) {
         return Arrays
                 .stream(source)
                 .map(String::trim)
@@ -59,7 +85,7 @@ public class Solution {
         return Arrays
                 .stream(text.split("\r?\n"))
                 .skip(1)
-                .map(x -> mapToIntArray(x.trim().split("\s+")))
+                .map(x -> mapToLongArray(x.trim().split("\s+")))
                 .toArray(long[][]::new);
     }
 }
